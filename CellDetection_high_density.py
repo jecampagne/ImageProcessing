@@ -32,15 +32,16 @@ from skimage.feature import shape_index
 from scipy import ndimage as ndi
 # -
 
-# # Indentification des sites dans une image peu encombree
+# # Indentification des sites dans une image encombree
 
-img = fits.getdata("jour0_01.fits")
+img = fits.getdata("jour6_01.fits")
 img = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
 
-zoom_img  = img[150:400,850:1050]
+zoom_img  = img[:128,:128]
 zoom_img_r = np.invert(zoom_img)
 
-plt.imshow(zoom_img_r,cmap='gray')
+plt.figure(figsize=(15,15))
+plt.imshow(zoom_img,cmap='gray')
 plt.colorbar()
 
 # ![image.png](attachment:aecc5da3-0e64-487c-ab72-18490230fd3d.png)
@@ -68,7 +69,7 @@ plt.yscale("log")
 
 # +
 target = 0.65
-delta = 0.2
+delta = 0.3
 point_y_s, point_x_s = np.where(np.abs(s_smooth - target) < delta)
 #point_z_s = zoom_img_r[point_y_s, point_x_s]
 
@@ -114,7 +115,7 @@ for keyPoint in keypoints:
 im_with_keypoints = cv2.drawKeypoints(new_img, keypoints, np.array([]), 
                                       (0,0,255), 
                                       cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)# Show keypoints
-fig, ax= plt.subplots(figsize=(20,20))
+fig, ax= plt.subplots(figsize=(15,15))
 g0=ax.imshow(zoom_img_r,cmap="gray")
 for x,y,s in zip(x_centroids,y_centroids,s_blobs):
     #if s < 2: continue
