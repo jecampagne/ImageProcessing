@@ -104,6 +104,12 @@ detector = cv2.SimpleBlobDetector_create(params)
 
 keypoints = detector.detect(new_img)
 
+# **keypoints positions : (M10/M00, M01/M00)**
+# $$M_{ij}=\Sum_x \Sum_y I(x,y) x^i y^ $$
+
+# +
+
+
 x_centroids = []
 y_centroids = []
 s_blobs = []
@@ -111,6 +117,7 @@ for keyPoint in keypoints:
     x_centroids.append(keyPoint.pt[0])
     y_centroids.append(keyPoint.pt[1])
     s_blobs.append(keyPoint.size)
+# -
 
 im_with_keypoints = cv2.drawKeypoints(new_img, keypoints, np.array([]), 
                                       (0,0,255), 
