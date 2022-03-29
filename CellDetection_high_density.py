@@ -69,7 +69,7 @@ plt.yscale("log")
 
 # +
 target = 0.65
-delta = 0.3
+delta = 0.25
 point_y_s, point_x_s = np.where(np.abs(s_smooth - target) < delta)
 #point_z_s = zoom_img_r[point_y_s, point_x_s]
 
@@ -119,12 +119,12 @@ fig, ax= plt.subplots(figsize=(15,15))
 g0=ax.imshow(zoom_img_r,cmap="gray")
 for x,y,s in zip(x_centroids,y_centroids,s_blobs):
     #if s < 2: continue
-    ax.scatter(x,y,c='r',s=10)
+    ax.scatter(x,y,c='green',s=30)
     r = s/2 # size is the diameter
-    circle = plt.Circle((x, y), r, color="blue", linewidth=2, fill=False)
+#    circle = plt.Circle((x, y), r, color="blue", linewidth=2, fill=False)
     #plt.imshow(im_with_keypoints,cmap="gray")
-    ax.add_patch(circle)
-ax.scatter(point_x_s, point_y_s, color='red', **scatter_settings)
+#    ax.add_patch(circle)
+#ax.scatter(point_x_s, point_y_s, color='red', **scatter_settings)
 plt.colorbar(g0);
 
 
