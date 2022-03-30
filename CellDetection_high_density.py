@@ -28,7 +28,7 @@ from astropy.io import fits
 
 # Image processing
 import cv2
-from skimage.feature import shape_index
+from skimage.feature import shape_index, canny
 from scipy import ndimage as ndi
 # -
 
@@ -67,20 +67,22 @@ plt.yscale("log")
 
 # **Trouver les pixels dont la shape la plus adaptiée est celle d'une spherical cap**
 
-# +
 target = 0.65
 delta = 0.25
 point_y_s, point_x_s = np.where(np.abs(s_smooth - target) < delta)
 #point_z_s = zoom_img_r[point_y_s, point_x_s]
 
-new_img = np.zeros_like(zoom_img_r)
-new_img[point_y_s, point_x_s]=zoom_img_r[point_y_s, point_x_s]
-# -
-
 fig, ax= plt.subplots(figsize=(20,20))
 g0=ax.imshow(zoom_img_r,cmap="gray")
 scatter_settings = dict(alpha=0.75, s=10, linewidths=0)
 ax.scatter(point_x_s, point_y_s, color='red', **scatter_settings)
+
+new_img = np.zeros_like(zoom_img_r)
+new_img[point_y_s, point_x_s]=zoom_img_r[point_y_s, point_x_s]
+
+plt.figure(figsize=(10,10))
+plt.imshow(new_img)
+plt.colorbar();
 
 # **Agglomerer les "blobs" pour en obtenir, le centroid et le diametre equivalent**
 
@@ -105,10 +107,8 @@ detector = cv2.SimpleBlobDetector_create(params)
 keypoints = detector.detect(new_img)
 
 # **keypoints positions : (M10/M00, M01/M00)**
-# $$M_{ij}=\Sum_x \Sum_y I(x,y) x^i y^ $$
-
-# +
-
+# $$\Large M_{ij}=\sum_x \sum_y I(x,y) x^i y^j $$
+# et la size correspond au "diametre" du blob mais là il faudrait avoir acces au moment directement pour calculer une ellipse par ex.
 
 x_centroids = []
 y_centroids = []
@@ -117,21 +117,20 @@ for keyPoint in keypoints:
     x_centroids.append(keyPoint.pt[0])
     y_centroids.append(keyPoint.pt[1])
     s_blobs.append(keyPoint.size)
-# -
 
 im_with_keypoints = cv2.drawKeypoints(new_img, keypoints, np.array([]), 
                                       (0,0,255), 
                                       cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)# Show keypoints
 fig, ax= plt.subplots(figsize=(15,15))
 g0=ax.imshow(zoom_img_r,cmap="gray")
+ax.scatter(point_x_s, point_y_s, color='red', **scatter_settings)
 for x,y,s in zip(x_centroids,y_centroids,s_blobs):
-    #if s < 2: continue
+    if s < 2: continue
     ax.scatter(x,y,c='green',s=30)
     r = s/2 # size is the diameter
 #    circle = plt.Circle((x, y), r, color="blue", linewidth=2, fill=False)
     #plt.imshow(im_with_keypoints,cmap="gray")
 #    ax.add_patch(circle)
-#ax.scatter(point_x_s, point_y_s, color='red', **scatter_settings)
 plt.colorbar(g0);
 
 

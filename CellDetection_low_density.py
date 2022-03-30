@@ -37,7 +37,7 @@ from scipy import ndimage as ndi
 img = fits.getdata("jour0_01.fits")
 img = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
 
-zoom_img  = img[150:400,850:1050]
+zoom_img  = img[1050:1350,1150:1450]#  zone avec un bloc encombre img[150:400,850:1050]
 zoom_img_r = np.invert(zoom_img)
 
 plt.imshow(zoom_img_r,cmap='gray')
@@ -68,7 +68,7 @@ plt.yscale("log")
 
 # +
 target = 0.65
-delta = 0.2
+delta = 0.25
 point_y_s, point_x_s = np.where(np.abs(s_smooth - target) < delta)
 #point_z_s = zoom_img_r[point_y_s, point_x_s]
 
@@ -114,17 +114,19 @@ for keyPoint in keypoints:
 im_with_keypoints = cv2.drawKeypoints(new_img, keypoints, np.array([]), 
                                       (0,0,255), 
                                       cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)# Show keypoints
-fig, ax= plt.subplots(figsize=(20,20))
+fig, ax= plt.subplots(figsize=(15,15))
 g0=ax.imshow(zoom_img_r,cmap="gray")
-for x,y,s in zip(x_centroids,y_centroids,s_blobs):
-    #if s < 2: continue
-    ax.scatter(x,y,c='r',s=10)
-    r = s/2 # size is the diameter
-    circle = plt.Circle((x, y), r, color="blue", linewidth=2, fill=False)
-    #plt.imshow(im_with_keypoints,cmap="gray")
-    ax.add_patch(circle)
 ax.scatter(point_x_s, point_y_s, color='red', **scatter_settings)
+for x,y,s in zip(x_centroids,y_centroids,s_blobs):
+    if s < 2: continue
+    ax.scatter(x,y,c='green',s=30)
+    r = s/2 # size is the diameter
+#    circle = plt.Circle((x, y), r, color="blue", linewidth=2, fill=False)
+    #plt.imshow(im_with_keypoints,cmap="gray")
+#    ax.add_patch(circle)
 plt.colorbar(g0);
+
+
 
 
 
